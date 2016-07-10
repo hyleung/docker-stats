@@ -47,45 +47,59 @@ func main() {
 		}
 		defer ui.Close()
 		p := ui.NewPar(":PRESS q to QUIT DEMO")
-		p.Height = 3
-		p.Width = 50
 		p.TextFgColor = ui.ColorWhite
 		p.BorderLabel = "Text Box"
+		p.Height = 3
 		p.BorderFg = ui.ColorCyan
 
-		cpu := ui.NewPar("...Awaiting CPU Stats")
-		cpu.Height = 3
-		cpu.Width = 50
-		cpu.Y = 5
-		cpu.TextFgColor = ui.ColorWhite
-		cpu.BorderLabel = "Container CPU"
-		cpu.BorderFg = ui.ColorCyan
+		systemUsage := ui.NewPar("...Awaiting CPU Stats")
+		systemUsage.TextFgColor = ui.ColorWhite
+		systemUsage.Height = 5
+		systemUsage.BorderLabel = "System CPU Usage"
+		systemUsage.BorderFg = ui.ColorCyan
 
-		g := ui.NewGauge()
-		g.Percent = 0
-		g.Width = 50
-		g.Height = 3
-		g.Y = 11
-		g.BorderLabel = "Guage"
-		g.BarColor = ui.ColorRed
-		g.BorderFg = ui.ColorWhite
-		g.BorderLabelFg = ui.ColorCyan
+		cpuUsage := ui.NewPar("...Awaiting CPU Stats")
+		cpuUsage.TextFgColor = ui.ColorWhite
+		cpuUsage.Height = 5
+		cpuUsage.BorderLabel = "CPU Usage"
+		cpuUsage.BorderFg = ui.ColorCyan
 
-		ui.Render(p, g, cpu)
+		memoryUsage := ui.NewPar("...Awaiting Memory Stats")
+		memoryUsage.TextFgColor = ui.ColorWhite
+		memoryUsage.Height = 5
+		memoryUsage.BorderLabel = "Memory Usage"
+		memoryUsage.BorderFg = ui.ColorCyan
+
+		maxMemoryUsage := ui.NewPar("...Awaiting Memory Stats")
+		maxMemoryUsage.TextFgColor = ui.ColorWhite
+		maxMemoryUsage.Height = 5
+		maxMemoryUsage.BorderLabel = "Max Memory Usage"
+		maxMemoryUsage.BorderFg = ui.ColorCyan
+		//Grid layout
+		ui.Body.AddRows(
+			ui.NewRow(
+				ui.NewCol(3, 0, systemUsage),
+				ui.NewCol(3, 0, cpuUsage),
+				ui.NewCol(3, 0, memoryUsage),
+				ui.NewCol(3, 0, maxMemoryUsage),
+			),
+			ui.NewRow(
+				ui.NewCol(12, 0, p),
+			),
+		)
+		ui.Body.Align()
+		ui.Render(ui.Body)
 
 		ui.Handle("/sys/kbd/q", func(ui.Event) {
 			ui.StopLoop()
 		})
 		ui.Handle("/docker/stats", func(e ui.Event) {
 			stats := e.Data.(types.Stats)
-			cpu := ui.NewPar(fmt.Sprintf("CPU Usage: %d", stats.CPUStats.SystemUsage))
-			cpu.Height = 3
-			cpu.Width = 50
-			cpu.Y = 5
-			cpu.TextFgColor = ui.ColorWhite
-			cpu.BorderLabel = "Container CPU"
-			cpu.BorderFg = ui.ColorCyan
-			ui.Render(cpu)
+			systemUsage.Text = fmt.Sprintf("CPU System Usage: %d", stats.CPUStats.SystemUsage)
+			cpuUsage.Text = fmt.Sprintf("CPU Total Usage: %d", stats.CPUStats.CPUUsage.TotalUsage)
+			memoryUsage.Text = fmt.Sprintf("Memory Usage: %d / %d", stats.MemoryStats.Usage, stats.MemoryStats.Limit)
+			maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %d", stats.MemoryStats.MaxUsage)
+			ui.Render(ui.Body)
 		})
 		ui.Loop()
 		return nil
