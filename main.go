@@ -14,6 +14,10 @@ import (
 	"strings"
 )
 
+type CPUUsagePercent struct {
+	Pct float64
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Action = func(c *cli.Context) error {
@@ -32,6 +36,8 @@ func main() {
 				panic(err)
 			}
 			scanner := bufio.NewScanner(readCloser)
+			var currentCPUUsage = uint64(0)
+			var currentSystemUsage = uint64(0)
 			for scanner.Scan() {
 				var stats types.Stats
 				err = json.NewDecoder(strings.NewReader(scanner.Text())).Decode(&stats)
@@ -39,6 +45,14 @@ func main() {
 					panic(err)
 				}
 				ui.SendCustomEvt("/docker/stats", stats)
+				//compute the cpu usage percentage
+				//via https://github.com/docker/docker/blob/e884a515e96201d4027a6c9c1b4fa884fc2d21a3/api/client/container/stats_helpers.go#L199-L212
+
+				cpuDiff := float64(stats.CPUStats.CPUUsage.TotalUsage) - float64(currentCPUUsage)
+				systemDiff := float64(stats.CPUStats.SystemUsage) - float64(currentSystemUsage)
+				ui.SendCustomEvt("/docker/cpuPct", CPUUsagePercent{Pct: cpuDiff / systemDiff * float64(len(stats.CPUStats.CPUUsage.PercpuUsage))})
+				currentCPUUsage = stats.CPUStats.CPUUsage.TotalUsage
+				currentSystemUsage = stats.CPUStats.SystemUsage
 			}
 		}()
 		err := ui.Init()
@@ -96,10 +110,13 @@ func main() {
 		ui.Handle("/docker/stats", func(e ui.Event) {
 			stats := e.Data.(types.Stats)
 			systemUsage.Text = fmt.Sprintf("CPU System Usage: %d", stats.CPUStats.SystemUsage)
-			cpuUsage.Text = fmt.Sprintf("CPU Total Usage: %d", stats.CPUStats.CPUUsage.TotalUsage)
 			memoryUsage.Text = fmt.Sprintf("Memory Usage: %d / %d", stats.MemoryStats.Usage, stats.MemoryStats.Limit)
 			maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %d", stats.MemoryStats.MaxUsage)
 			ui.Render(ui.Body)
+		})
+		ui.Handle("/docker/cpuPct", func(e ui.Event) {
+			stats := e.Data.(CPUUsagePercent)
+			cpuUsage.Text = fmt.Sprintf("CPU Usage: %5.2f%%", stats.Pct*100)
 		})
 		ui.Loop()
 		return nil
