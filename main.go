@@ -15,7 +15,8 @@ import (
 )
 
 type CPUUsagePercent struct {
-	Pct float64
+	Pct  float64
+	Data []float64
 }
 
 func main() {
@@ -38,6 +39,8 @@ func main() {
 			scanner := bufio.NewScanner(readCloser)
 			var currentCPUUsage = uint64(0)
 			var currentSystemUsage = uint64(0)
+			var cpuHistory = make([]float64, 60)
+			var cpuHead = 0
 			for scanner.Scan() {
 				var stats types.Stats
 				err = json.NewDecoder(strings.NewReader(scanner.Text())).Decode(&stats)
@@ -50,7 +53,14 @@ func main() {
 
 				cpuDiff := float64(stats.CPUStats.CPUUsage.TotalUsage) - float64(currentCPUUsage)
 				systemDiff := float64(stats.CPUStats.SystemUsage) - float64(currentSystemUsage)
-				ui.SendCustomEvt("/docker/cpuPct", CPUUsagePercent{Pct: cpuDiff / systemDiff * float64(len(stats.CPUStats.CPUUsage.PercpuUsage))})
+				cpuPct := cpuDiff / systemDiff * float64(len(stats.CPUStats.CPUUsage.PercpuUsage))
+				cpuHistory[cpuHead] = cpuPct * 100.0
+				if cpuHead < 59 {
+					cpuHead = cpuHead + 1
+				} else {
+					cpuHead = 0
+				}
+				ui.SendCustomEvt("/docker/cpuPct", CPUUsagePercent{Pct: cpuPct, Data: cpuHistory})
 				currentCPUUsage = stats.CPUStats.CPUUsage.TotalUsage
 				currentSystemUsage = stats.CPUStats.SystemUsage
 			}
@@ -66,17 +76,19 @@ func main() {
 		p.Height = 3
 		p.BorderFg = ui.ColorCyan
 
-		systemUsage := ui.NewPar("...Awaiting CPU Stats")
-		systemUsage.TextFgColor = ui.ColorWhite
-		systemUsage.Height = 5
-		systemUsage.BorderLabel = "System CPU Usage"
-		systemUsage.BorderFg = ui.ColorCyan
-
 		cpuUsage := ui.NewPar("...Awaiting CPU Stats")
 		cpuUsage.TextFgColor = ui.ColorWhite
 		cpuUsage.Height = 5
 		cpuUsage.BorderLabel = "CPU Usage"
 		cpuUsage.BorderFg = ui.ColorCyan
+
+		cpuGraph := ui.NewLineChart()
+		cpuGraph.BorderLabel = "CPU Usage"
+		cpuGraph.Height = 10
+		cpuGraph.X = 0
+		cpuGraph.Y = 0
+		cpuGraph.AxesColor = ui.ColorWhite
+		cpuGraph.LineColor = ui.ColorRed
 
 		memoryUsage := ui.NewPar("...Awaiting Memory Stats")
 		memoryUsage.TextFgColor = ui.ColorWhite
@@ -92,8 +104,8 @@ func main() {
 		//Grid layout
 		ui.Body.AddRows(
 			ui.NewRow(
-				ui.NewCol(3, 0, systemUsage),
 				ui.NewCol(3, 0, cpuUsage),
+				ui.NewCol(3, 0, cpuGraph),
 				ui.NewCol(3, 0, memoryUsage),
 				ui.NewCol(3, 0, maxMemoryUsage),
 			),
@@ -109,7 +121,6 @@ func main() {
 		})
 		ui.Handle("/docker/stats", func(e ui.Event) {
 			stats := e.Data.(types.Stats)
-			systemUsage.Text = fmt.Sprintf("CPU System Usage: %d", stats.CPUStats.SystemUsage)
 			memoryUsage.Text = fmt.Sprintf("Memory Usage: %d / %d", stats.MemoryStats.Usage, stats.MemoryStats.Limit)
 			maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %d", stats.MemoryStats.MaxUsage)
 			ui.Render(ui.Body)
@@ -117,6 +128,7 @@ func main() {
 		ui.Handle("/docker/cpuPct", func(e ui.Event) {
 			stats := e.Data.(CPUUsagePercent)
 			cpuUsage.Text = fmt.Sprintf("CPU Usage: %5.2f%%", stats.Pct*100)
+			cpuGraph.Data = stats.Data
 		})
 		ui.Loop()
 		return nil
