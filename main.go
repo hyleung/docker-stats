@@ -14,11 +14,6 @@ import (
 	"strings"
 )
 
-type CPUUsagePercent struct {
-	Pct  float64
-	Data []float64
-}
-
 func main() {
 	app := cli.NewApp()
 	app.Action = func(c *cli.Context) error {
@@ -76,38 +71,19 @@ func main() {
 		p.Height = 3
 		p.BorderFg = ui.ColorCyan
 
-		cpuUsage := ui.NewPar("...Awaiting CPU Stats")
-		cpuUsage.TextFgColor = ui.ColorWhite
-		cpuUsage.Height = 5
-		cpuUsage.BorderLabel = "CPU Usage"
-		cpuUsage.BorderFg = ui.ColorCyan
+		cpuUsage := NewCpuUsageWidget()
 
-		cpuGraph := ui.NewLineChart()
-		cpuGraph.BorderLabel = "CPU Usage"
-		cpuGraph.Height = 10
-		cpuGraph.X = 0
-		cpuGraph.Y = 0
-		cpuGraph.AxesColor = ui.ColorWhite
-		cpuGraph.LineColor = ui.ColorRed
+		cpuGraph := NewCpuUsageChart()
 
-		memoryUsage := ui.NewPar("...Awaiting Memory Stats")
-		memoryUsage.TextFgColor = ui.ColorWhite
-		memoryUsage.Height = 5
-		memoryUsage.BorderLabel = "Memory Usage"
-		memoryUsage.BorderFg = ui.ColorCyan
+		memoryUsage := NewMemoryUsagePar()
 
-		maxMemoryUsage := ui.NewPar("...Awaiting Memory Stats")
-		maxMemoryUsage.TextFgColor = ui.ColorWhite
-		maxMemoryUsage.Height = 5
-		maxMemoryUsage.BorderLabel = "Max Memory Usage"
-		maxMemoryUsage.BorderFg = ui.ColorCyan
+		maxMemoryUsage := NewMaxMemoryWidget()
+
 		//Grid layout
 		ui.Body.AddRows(
 			ui.NewRow(
-				ui.NewCol(3, 0, cpuUsage),
-				ui.NewCol(3, 0, cpuGraph),
-				ui.NewCol(3, 0, memoryUsage),
-				ui.NewCol(3, 0, maxMemoryUsage),
+				ui.NewCol(6, 0, cpuUsage, cpuGraph),
+				ui.NewCol(6, 0, memoryUsage, maxMemoryUsage),
 			),
 			ui.NewRow(
 				ui.NewCol(12, 0, p),
