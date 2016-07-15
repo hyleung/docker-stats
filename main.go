@@ -95,16 +95,15 @@ func main() {
 		ui.Handle("/sys/kbd/q", func(ui.Event) {
 			ui.StopLoop()
 		})
+		ui.Handle("/docker/cpuPct", func(e ui.Event) {
+			cpuUsage.Handler(e)
+			cpuGraph.Handler(e)
+		})
 		ui.Handle("/docker/stats", func(e ui.Event) {
 			stats := e.Data.(types.Stats)
 			memoryUsage.Text = fmt.Sprintf("Memory Usage: %d / %d", stats.MemoryStats.Usage, stats.MemoryStats.Limit)
 			maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %d", stats.MemoryStats.MaxUsage)
 			ui.Render(ui.Body)
-		})
-		ui.Handle("/docker/cpuPct", func(e ui.Event) {
-			stats := e.Data.(CPUUsagePercent)
-			cpuUsage.Text = fmt.Sprintf("CPU Usage: %5.2f%%", stats.Pct*100)
-			cpuGraph.Data = stats.Data
 		})
 		ui.Loop()
 		return nil
