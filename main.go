@@ -79,11 +79,15 @@ func main() {
 
 		maxMemoryUsage := NewMaxMemoryWidget()
 
+		networkStats := NewNetworkStats()
 		//Grid layout
 		ui.Body.AddRows(
 			ui.NewRow(
 				ui.NewCol(6, 0, cpuUsage, cpuGraph),
 				ui.NewCol(6, 0, memoryUsage, maxMemoryUsage),
+			),
+			ui.NewRow(
+				ui.NewCol(6, 0, networkStats.Views...),
 			),
 			ui.NewRow(
 				ui.NewCol(12, 0, p),
