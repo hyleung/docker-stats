@@ -37,7 +37,7 @@ func main() {
 			var cpuHistory = make([]float64, 60)
 			var cpuHead = 0
 			for scanner.Scan() {
-				var stats types.Stats
+				var stats types.StatsJSON
 				err = json.NewDecoder(strings.NewReader(scanner.Text())).Decode(&stats)
 				if err != nil {
 					panic(err)
@@ -87,7 +87,8 @@ func main() {
 				ui.NewCol(6, 0, memoryUsage, maxMemoryUsage),
 			),
 			ui.NewRow(
-				ui.NewCol(6, 0, networkStats.Views...),
+				ui.NewCol(3, 0, networkStats.RxViews...),
+				ui.NewCol(3, 0, networkStats.TxViews...),
 			),
 			ui.NewRow(
 				ui.NewCol(12, 0, p),
@@ -104,7 +105,8 @@ func main() {
 			cpuGraph.Handler(e)
 		})
 		ui.Handle("/docker/stats", func(e ui.Event) {
-			stats := e.Data.(types.Stats)
+			stats := e.Data.(types.StatsJSON)
+			networkStats.Handler(e)
 			memoryUsage.Text = fmt.Sprintf("Memory Usage: %d / %d", stats.MemoryStats.Usage, stats.MemoryStats.Limit)
 			maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %d", stats.MemoryStats.MaxUsage)
 			ui.Render(ui.Body)
