@@ -34,7 +34,7 @@ func main() {
 			scanner := bufio.NewScanner(readCloser)
 			var currentCPUUsage = uint64(0)
 			var currentSystemUsage = uint64(0)
-			var cpuHistory = make([]float64, 60)
+			var cpuHistory = make([]float64, 600)
 			var cpuHead = 0
 			for scanner.Scan() {
 				var stats types.StatsJSON
@@ -50,7 +50,7 @@ func main() {
 				systemDiff := float64(stats.CPUStats.SystemUsage) - float64(currentSystemUsage)
 				cpuPct := cpuDiff / systemDiff * float64(len(stats.CPUStats.CPUUsage.PercpuUsage))
 				cpuHistory[cpuHead] = cpuPct * 100.0
-				if cpuHead < 59 {
+				if cpuHead < 599 {
 					cpuHead = cpuHead + 1
 				} else {
 					cpuHead = 0

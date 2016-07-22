@@ -26,13 +26,17 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 	cpuGraph := ui.NewLineChart()
 	cpuGraph.BorderLabel = "CPU Usage"
 	cpuGraph.Height = 10
+	cpuGraph.PaddingTop = 1
+	cpuGraph.Mode = "dot"
 	cpuGraph.X = 0
 	cpuGraph.Y = 0
 	cpuGraph.AxesColor = ui.ColorWhite
 	cpuGraph.LineColor = ui.ColorRed
+	var i = 0
 	return &CpuUsageWidget{Par: cpuUsage, LineChart: cpuGraph, Handler: func(e ui.Event) {
 		stats := e.Data.(CPUUsagePercent)
 		cpuUsage.Text = fmt.Sprintf("CPU Usage: %5.2f%%", stats.Pct*100)
-		cpuGraph.Data = stats.Data
+		cpuGraph.Data = stats.Data[:i]
+		i = i + 1
 	}}
 }
