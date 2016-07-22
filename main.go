@@ -73,8 +73,6 @@ func main() {
 
 		cpuUsage := NewCpuUsageWidget()
 
-		cpuGraph := NewCpuUsageChart()
-
 		memoryUsage := NewMemoryUsagePar()
 
 		maxMemoryUsage := NewMaxMemoryWidget()
@@ -83,7 +81,7 @@ func main() {
 		//Grid layout
 		ui.Body.AddRows(
 			ui.NewRow(
-				ui.NewCol(6, 0, cpuUsage, cpuGraph),
+				ui.NewCol(6, 0, cpuUsage.Par, cpuUsage.LineChart),
 				ui.NewCol(6, 0, memoryUsage, maxMemoryUsage),
 			),
 			ui.NewRow(
@@ -102,7 +100,6 @@ func main() {
 		})
 		ui.Handle("/docker/cpuPct", func(e ui.Event) {
 			cpuUsage.Handler(e)
-			cpuGraph.Handler(e)
 		})
 		ui.Handle("/docker/stats", func(e ui.Event) {
 			stats := e.Data.(types.StatsJSON)

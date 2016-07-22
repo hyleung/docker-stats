@@ -7,12 +7,8 @@ import (
 
 type CpuUsageWidget struct {
 	*ui.Par
-	Handler func(ui.Event)
-}
-
-type CpuChart struct {
 	*ui.LineChart
-	Handler func(e ui.Event)
+	Handler func(ui.Event)
 }
 
 type CPUUsagePercent struct {
@@ -26,14 +22,7 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 	cpuUsage.Height = 5
 	cpuUsage.BorderLabel = "CPU Usage"
 	cpuUsage.BorderFg = ui.ColorCyan
-	return &CpuUsageWidget{Par: cpuUsage, Handler: func(e ui.Event) {
-		stats := e.Data.(CPUUsagePercent)
-		cpuUsage.Text = fmt.Sprintf("CPU Usage: %5.2f%%", stats.Pct*100)
 
-	}}
-}
-
-func NewCpuUsageChart() *CpuChart {
 	cpuGraph := ui.NewLineChart()
 	cpuGraph.BorderLabel = "CPU Usage"
 	cpuGraph.Height = 10
@@ -41,8 +30,9 @@ func NewCpuUsageChart() *CpuChart {
 	cpuGraph.Y = 0
 	cpuGraph.AxesColor = ui.ColorWhite
 	cpuGraph.LineColor = ui.ColorRed
-	return &CpuChart{LineChart: cpuGraph, Handler: func(e ui.Event) {
+	return &CpuUsageWidget{Par: cpuUsage, LineChart: cpuGraph, Handler: func(e ui.Event) {
 		stats := e.Data.(CPUUsagePercent)
+		cpuUsage.Text = fmt.Sprintf("CPU Usage: %5.2f%%", stats.Pct*100)
 		cpuGraph.Data = stats.Data
 	}}
 }
