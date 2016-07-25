@@ -7,8 +7,7 @@ import (
 )
 
 type CpuUsageWidget struct {
-	*ui.Par
-	*ui.LineChart
+	Views   []ui.GridBufferer
 	Handler func(ui.Event)
 }
 
@@ -18,12 +17,6 @@ type CPUUsagePercent struct {
 }
 
 func NewCpuUsageWidget() *CpuUsageWidget {
-	cpuUsage := ui.NewPar("...Awaiting CPU Stats")
-	cpuUsage.TextFgColor = ui.ColorWhite
-	cpuUsage.Height = 5
-	cpuUsage.BorderLabel = "CPU Usage"
-	cpuUsage.BorderFg = ui.ColorCyan
-
 	cpuGraph := ui.NewLineChart()
 	cpuGraph.BorderLabel = "CPU Usage"
 	cpuGraph.Height = 10
@@ -39,7 +32,7 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 	var currentSystemUsage = uint64(0)
 	var cpuHistory = make([]float64, 600)
 	var cpuHead = 0
-	return &CpuUsageWidget{Par: cpuUsage, LineChart: cpuGraph, Handler: func(e ui.Event) {
+	return &CpuUsageWidget{Views: []ui.GridBufferer{cpuGraph}, Handler: func(e ui.Event) {
 		stats := e.Data.(types.StatsJSON)
 		var cpuPct = 0.0
 		cpuPct, currentCPUUsage, currentSystemUsage = computeCpu(stats, currentCPUUsage, currentSystemUsage)
@@ -51,7 +44,7 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 			//reset the data range
 			cpuHistory = make([]float64, 600)
 		}
-		cpuUsage.Text = fmt.Sprintf("CPU Usage: %5.2f%%", cpuPct*100)
+		cpuGraph.BorderLabel = fmt.Sprintf("CPU Usage: %5.2f%%", cpuPct*100)
 		cpuGraph.Data = getDataRange(cpuGraph, cpuHistory, cpuHead)
 		i = i + 1
 	}}
@@ -63,7 +56,6 @@ func computeNumPoints(lc *ui.LineChart) int {
 }
 func getDataRange(lc *ui.LineChart, data []float64, head int) []float64 {
 	points := computeNumPoints(lc)
-	lc.BorderLabel = fmt.Sprintf("CPU Usage: head = %d, points = %d", head, points)
 	if head < points {
 		return data
 	}

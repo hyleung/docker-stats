@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/docker/engine-api/client"
@@ -54,16 +53,14 @@ func main() {
 
 		cpuUsage := NewCpuUsageWidget()
 
-		memoryUsage := NewMemoryUsagePar()
-
-		maxMemoryUsage := NewMaxMemoryWidget()
+		memoryUsage := NewMemoryUsageWidget()
 
 		networkStats := NewNetworkStats()
 		//Grid layout
 		ui.Body.AddRows(
 			ui.NewRow(
-				ui.NewCol(6, 0, cpuUsage.Par, cpuUsage.LineChart),
-				ui.NewCol(6, 0, memoryUsage, maxMemoryUsage),
+				ui.NewCol(6, 0, cpuUsage.Views...),
+				ui.NewCol(6, 0, memoryUsage.Views...),
 			),
 			ui.NewRow(
 				ui.NewCol(3, 0, networkStats.RxViews...),
@@ -80,10 +77,8 @@ func main() {
 			ui.StopLoop()
 		})
 		ui.Handle("/docker/stats", func(e ui.Event) {
-			stats := e.Data.(types.StatsJSON)
 			networkStats.Handler(e)
-			memoryUsage.Text = fmt.Sprintf("Memory Usage: %d / %d", stats.MemoryStats.Usage, stats.MemoryStats.Limit)
-			maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %d", stats.MemoryStats.MaxUsage)
+			memoryUsage.Handler(e)
 			cpuUsage.Handler(e)
 			ui.Render(ui.Body)
 		})
