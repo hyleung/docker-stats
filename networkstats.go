@@ -16,12 +16,13 @@ type NetworkStatsWidget struct {
 func NewNetworkStats() NetworkStatsWidget {
 	rxList := ui.NewList()
 	rxList.BorderLabel = "Network Received"
+	rxList.BorderFg = ui.ColorCyan
 
 	rxData := []string{
-		"RxBytes:   0",
-		"RxPackets: 0",
-		"RxErrors:  0",
-		"RxDropped: 0",
+		"Bytes:   0",
+		"Packets: 0",
+		"Errors:  0",
+		"Dropped: 0",
 	}
 
 	rxList.Items = rxData
@@ -32,12 +33,12 @@ func NewNetworkStats() NetworkStatsWidget {
 
 	txList := ui.NewList()
 	txList.BorderLabel = "Network Transmit"
-
+	txList.BorderFg = ui.ColorCyan
 	txData := []string{
-		"TxBytes:   0",
-		"TxPackets: 0",
-		"TxErrors:  0",
-		"TxDropped: 0",
+		"Bytes:   0",
+		"Packets: 0",
+		"Errors:  0",
+		"Dropped: 0",
 	}
 
 	txList.Items = txData
@@ -57,19 +58,19 @@ func NewNetworkStats() NetworkStatsWidget {
 
 func formatRxData(stats types.NetworkStats) []string {
 	data := []string{
-		fmt.Sprintf("RxBytes:   %d", stats.RxBytes),
-		fmt.Sprintf("RxPackets: %d", stats.RxPackets),
-		fmt.Sprintf("RxErrors:  %d", stats.RxErrors),
-		fmt.Sprintf("RxDropped: %d", stats.RxDropped),
+		fmt.Sprintf("Bytes:   %d", stats.RxBytes),
+		fmt.Sprintf("Packets: %d", stats.RxPackets),
+		fmt.Sprintf("Errors:  %d", stats.RxErrors),
+		fmt.Sprintf("Dropped: %d", stats.RxDropped),
 	}
 	return data
 }
 func formatTxData(stats types.NetworkStats) []string {
 	data := []string{
-		fmt.Sprintf("TxBytes:   %d", stats.TxBytes),
-		fmt.Sprintf("TxPackets: %d", stats.TxPackets),
-		fmt.Sprintf("TxErrors:  %d", stats.TxErrors),
-		fmt.Sprintf("TxDropped: %d", stats.TxDropped),
+		fmt.Sprintf("Bytes:   %d", stats.TxBytes),
+		fmt.Sprintf("Packets: %d", stats.TxPackets),
+		fmt.Sprintf("Errors:  %d", stats.TxErrors),
+		fmt.Sprintf("Dropped: %d", stats.TxDropped),
 	}
 	return data
 }

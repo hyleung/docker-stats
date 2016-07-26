@@ -27,6 +27,7 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 	cpuGraph.Y = 0
 	cpuGraph.AxesColor = ui.ColorWhite
 	cpuGraph.LineColor = ui.ColorRed
+	cpuGraph.BorderFg = ui.ColorCyan
 	var i = 0
 	var currentCPUUsage = uint64(0)
 	var currentSystemUsage = uint64(0)
@@ -51,7 +52,7 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 }
 
 func computeNumPoints(lc *ui.LineChart) int {
-	padding := 20
+	padding := 9 * 2
 	return (lc.Width - padding)
 }
 func getDataRange(lc *ui.LineChart, data []float64, head int) []float64 {
