@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/docker/engine-api/types"
+	humanize "github.com/dustin/go-humanize"
 	ui "github.com/gizak/termui"
 )
 
@@ -28,9 +29,13 @@ func NewMemoryUsageWidget() *MemoryUsageWidget {
 
 	return &MemoryUsageWidget{Views: []ui.GridBufferer{memoryUsage, maxMemoryUsage}, Handler: func(e ui.Event) {
 		stats := e.Data.(types.StatsJSON)
-		memoryUsage.BorderLabel = fmt.Sprintf("Memory Usage: %d / %d", stats.MemoryStats.Usage, stats.MemoryStats.Limit)
+
+		usage := stats.MemoryStats.Usage
+		limit := stats.MemoryStats.Limit
+		max := stats.MemoryStats.MaxUsage
+		memoryUsage.BorderLabel = fmt.Sprintf("Memory Usage: %s / %s", humanize.Bytes(usage), humanize.Bytes(limit))
 		memoryUsage.Percent = int((float64(stats.MemoryStats.Usage) / float64(stats.MemoryStats.Limit)) * 100)
-		maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %d", stats.MemoryStats.MaxUsage)
+		maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %s", humanize.Bytes(max))
 
 	}}
 }
