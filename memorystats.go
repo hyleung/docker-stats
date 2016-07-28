@@ -15,27 +15,20 @@ type MemoryUsageWidget struct {
 func NewMemoryUsageWidget() *MemoryUsageWidget {
 	memoryUsage := ui.NewGauge()
 	memoryUsage.Label = "{{percent}}%"
-	memoryUsage.Height = 4
+	memoryUsage.Height = 3
 	memoryUsage.BorderLabel = "Memory Usage"
+
 	memoryUsage.BarColor = ui.ColorGreen
 	memoryUsage.BorderFg = ui.ColorCyan
-	//memoryUsage.BorderLabelFg = ui.ColorMagenta
 
-	maxMemoryUsage := ui.NewPar("...Awaiting Memory Stats")
-	maxMemoryUsage.TextFgColor = ui.ColorWhite
-	maxMemoryUsage.Height = 5
-	maxMemoryUsage.BorderLabel = "Max Memory Usage"
-	maxMemoryUsage.BorderFg = ui.ColorCyan
-
-	return &MemoryUsageWidget{Views: []ui.GridBufferer{memoryUsage, maxMemoryUsage}, Handler: func(e ui.Event) {
+	return &MemoryUsageWidget{Views: []ui.GridBufferer{memoryUsage}, Handler: func(e ui.Event) {
 		stats := e.Data.(types.StatsJSON)
 
 		usage := stats.MemoryStats.Usage
 		limit := stats.MemoryStats.Limit
 		max := stats.MemoryStats.MaxUsage
-		memoryUsage.BorderLabel = fmt.Sprintf("Memory Usage: %s / %s", humanize.Bytes(usage), humanize.Bytes(limit))
+		memoryUsage.BorderLabel = fmt.Sprintf("Memory Usage: %s / %s (max: %s)", humanize.Bytes(usage), humanize.Bytes(limit), humanize.Bytes(max))
 		memoryUsage.Percent = int((float64(stats.MemoryStats.Usage) / float64(stats.MemoryStats.Limit)) * 100)
-		maxMemoryUsage.Text = fmt.Sprintf("Max Memory Usage: %s", humanize.Bytes(max))
 
 	}}
 }

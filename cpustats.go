@@ -19,14 +19,13 @@ type CPUUsagePercent struct {
 func NewCpuUsageWidget() *CpuUsageWidget {
 	cpuGraph := ui.NewLineChart()
 	cpuGraph.BorderLabel = "CPU Usage"
+	cpuGraph.LineColor = ui.ColorRed | ui.AttrBold
 	cpuGraph.Height = 10
 	cpuGraph.PaddingTop = 1
-	cpuGraph.PaddingRight = 10
-	cpuGraph.Mode = "dot"
+	cpuGraph.PaddingRight = 2
 	cpuGraph.X = 0
 	cpuGraph.Y = 0
 	cpuGraph.AxesColor = ui.ColorWhite
-	cpuGraph.LineColor = ui.ColorRed
 	cpuGraph.BorderFg = ui.ColorCyan
 	var i = 0
 	var currentCPUUsage = uint64(0)

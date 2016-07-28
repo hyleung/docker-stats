@@ -45,9 +45,9 @@ func main() {
 			panic(err)
 		}
 		defer ui.Close()
-		p := ui.NewPar(":PRESS q to QUIT DEMO")
+		p := ui.NewPar(":PRESS q to QUIT")
 		p.TextFgColor = ui.ColorWhite
-		p.BorderLabel = "Text Box"
+		p.BorderLabel = "Menu"
 		p.Height = 3
 		p.BorderFg = ui.ColorCyan
 
@@ -59,12 +59,12 @@ func main() {
 		//Grid layout
 		ui.Body.AddRows(
 			ui.NewRow(
-				ui.NewCol(6, 0, cpuUsage.Views...),
-				ui.NewCol(6, 0, memoryUsage.Views...),
+				ui.NewCol(12, 0, cpuUsage.Views...),
 			),
 			ui.NewRow(
 				ui.NewCol(3, 0, networkStats.RxViews...),
 				ui.NewCol(3, 0, networkStats.TxViews...),
+				ui.NewCol(6, 0, memoryUsage.Views...),
 			),
 			ui.NewRow(
 				ui.NewCol(12, 0, p),
