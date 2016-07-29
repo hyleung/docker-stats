@@ -52,10 +52,9 @@ func main() {
 		p.BorderFg = ui.ColorCyan
 
 		cpuUsage := NewCpuUsageWidget()
-
 		memoryUsage := NewMemoryUsageWidget()
-
 		networkStats := NewNetworkStats()
+		blkIOStats := NewBlkIOWidget()
 		//Grid layout
 		ui.Body.AddRows(
 			ui.NewRow(
@@ -65,6 +64,9 @@ func main() {
 				ui.NewCol(3, 0, networkStats.RxViews...),
 				ui.NewCol(3, 0, networkStats.TxViews...),
 				ui.NewCol(6, 0, memoryUsage.Views...),
+			),
+			ui.NewRow(
+				ui.NewCol(3, 0, blkIOStats.Views...),
 			),
 			ui.NewRow(
 				ui.NewCol(12, 0, p),
@@ -80,6 +82,7 @@ func main() {
 			networkStats.Handler(e)
 			memoryUsage.Handler(e)
 			cpuUsage.Handler(e)
+			blkIOStats.Handler(e)
 			ui.Render(ui.Body)
 		})
 		ui.Loop()
