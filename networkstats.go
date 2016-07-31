@@ -26,7 +26,7 @@ func NewNetworkStats() NetworkStatsWidget {
 	}
 
 	rxList.Items = rxData
-	rxList.Height = 10
+	rxList.Height = 6
 	rxList.PaddingLeft = 1
 	rxViews := make([]ui.GridBufferer, 4)
 	rxViews[0] = rxList
@@ -42,7 +42,7 @@ func NewNetworkStats() NetworkStatsWidget {
 	}
 
 	txList.Items = txData
-	txList.Height = 10
+	txList.Height = 6
 	txList.PaddingLeft = 1
 	txViews := make([]ui.GridBufferer, 4)
 	txViews[0] = txList

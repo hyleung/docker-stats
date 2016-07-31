@@ -66,7 +66,8 @@ func main() {
 				ui.NewCol(6, 0, memoryUsage.Views...),
 			),
 			ui.NewRow(
-				ui.NewCol(3, 0, blkIOStats.Views...),
+				ui.NewCol(3, 0, blkIOStats.Views[0]),
+				ui.NewCol(3, 0, blkIOStats.Views[1]),
 			),
 			ui.NewRow(
 				ui.NewCol(12, 0, p),
