@@ -44,15 +44,28 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 			//reset the data range
 			cpuHistory = make([]float64, 600)
 		}
+		numPoints := computeNumPoints(cpuGraph)
 		cpuGraph.BorderLabel = fmt.Sprintf("CPU Usage: %5.2f%%", cpuPct*100)
 		cpuGraph.Data = getDataRange(cpuGraph, cpuHistory, cpuHead)
+		cpuGraph.DataLabels = computeLabels(cpuHead, numPoints)
 		i = i + 1
 	}}
 }
 
+func computeLabels(head int, numPoints int) []string {
+	result := make([]string, numPoints)
+	var offset = 0
+	if head > len(result) {
+		offset = head - numPoints
+	}
+	for i := 0; i < len(result); i++ {
+		result[i] = fmt.Sprintf("%d", offset+i)
+	}
+	return result
+}
 func computeNumPoints(lc *ui.LineChart) int {
 	padding := 9 * 2
-	return (lc.Width - padding)
+	return (lc.Width - padding) * 2
 }
 func getDataRange(lc *ui.LineChart, data []float64, head int) []float64 {
 	points := computeNumPoints(lc)
