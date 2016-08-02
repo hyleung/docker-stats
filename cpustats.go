@@ -6,6 +6,8 @@ import (
 	ui "github.com/gizak/termui"
 )
 
+const CPU_RANGE_SIZE = 600
+
 type CpuUsageWidget struct {
 	Views   []ui.GridBufferer
 	Handler func(ui.Event)
@@ -30,21 +32,21 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 	var i = 0
 	var currentCPUUsage = uint64(0)
 	var currentSystemUsage = uint64(0)
-	var cpuHistory = make([]float64, 600)
+	var cpuHistory = make([]float64, CPU_RANGE_SIZE)
 	var cpuHead = 0
 	return &CpuUsageWidget{Views: []ui.GridBufferer{cpuGraph}, Handler: func(e ui.Event) {
 		stats := e.Data.(types.StatsJSON)
 		var cpuPct = 0.0
 		cpuPct, currentCPUUsage, currentSystemUsage = computeCpu(stats, currentCPUUsage, currentSystemUsage)
-		cpuHistory[cpuHead] = cpuPct * 100.0
-		if cpuHead < len(cpuHistory) {
+		if cpuHead < len(cpuHistory)-1 {
 			cpuHead = cpuHead + 1
 		} else {
 			cpuHead = 0
 			//reset the data range
-			cpuHistory = make([]float64, 600)
+			cpuHistory = make([]float64, CPU_RANGE_SIZE)
 		}
 		numPoints := computeNumPoints(cpuGraph)
+		cpuHistory[cpuHead] = cpuPct * 100.0
 		cpuGraph.BorderLabel = fmt.Sprintf("CPU Usage: %5.2f%%", cpuPct*100)
 		cpuGraph.Data = getDataRange(cpuGraph, cpuHistory, cpuHead)
 		cpuGraph.DataLabels = computeLabels(cpuHead, numPoints)
