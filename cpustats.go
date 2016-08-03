@@ -29,7 +29,6 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 	cpuGraph.Y = 0
 	cpuGraph.AxesColor = ui.ColorWhite
 	cpuGraph.BorderFg = ui.ColorCyan
-	var i = 0
 	var currentCPUUsage = uint64(0)
 	var currentSystemUsage = uint64(0)
 	var cpuHistory = make([]float64, CPU_RANGE_SIZE)
@@ -50,7 +49,6 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 		cpuGraph.BorderLabel = fmt.Sprintf("CPU Usage: %5.2f%%", cpuPct*100)
 		cpuGraph.Data = getDataRange(cpuGraph, cpuHistory, cpuHead)
 		cpuGraph.DataLabels = computeLabels(cpuHead, numPoints)
-		i = i + 1
 	}}
 }
 

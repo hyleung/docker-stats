@@ -21,7 +21,12 @@ func NewMemoryUsageWidget() *MemoryUsageWidget {
 	memoryUsage.BarColor = ui.ColorGreen
 	memoryUsage.BorderFg = ui.ColorCyan
 
-	return &MemoryUsageWidget{Views: []ui.GridBufferer{memoryUsage}, Handler: func(e ui.Event) {
+	pidStatsPar := ui.NewPar("PID Stats")
+	pidStatsPar.BorderLabel = "PID Stats"
+	pidStatsPar.Height = 3
+	pidStatsPar.BorderFg = ui.ColorCyan
+
+	return &MemoryUsageWidget{Views: []ui.GridBufferer{memoryUsage, pidStatsPar}, Handler: func(e ui.Event) {
 		stats := e.Data.(types.StatsJSON)
 
 		usage := stats.MemoryStats.Usage
@@ -29,6 +34,9 @@ func NewMemoryUsageWidget() *MemoryUsageWidget {
 		max := stats.MemoryStats.MaxUsage
 		memoryUsage.BorderLabel = fmt.Sprintf("Memory Usage: %s / %s (max: %s)", humanize.Bytes(usage), humanize.Bytes(limit), humanize.Bytes(max))
 		memoryUsage.Percent = int((float64(stats.MemoryStats.Usage) / float64(stats.MemoryStats.Limit)) * 100)
+
+		pidStats := stats.PidsStats
+		pidStatsPar.Text = fmt.Sprintf("Current: %d (Limit: %d)", pidStats.Current, pidStats.Limit)
 
 	}}
 }
