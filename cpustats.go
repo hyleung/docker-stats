@@ -7,6 +7,7 @@ import (
 )
 
 const CPU_RANGE_SIZE = 600
+const cpu_graph_right_pad = 9
 
 type CpuUsageWidget struct {
 	Views   []ui.GridBufferer
@@ -29,6 +30,7 @@ func NewCpuUsageWidget() *CpuUsageWidget {
 	cpuGraph.Y = 0
 	cpuGraph.AxesColor = ui.ColorWhite
 	cpuGraph.BorderFg = ui.ColorCyan
+	cpuGraph.PaddingRight = cpu_graph_right_pad
 	var currentCPUUsage = uint64(0)
 	var currentSystemUsage = uint64(0)
 	var cpuHistory = make([]float64, CPU_RANGE_SIZE)
@@ -64,15 +66,22 @@ func computeLabels(head int, numPoints int) []string {
 	return result
 }
 func computeNumPoints(lc *ui.LineChart) int {
-	padding := 9 * 2
+	//2x multiplier if using braille mode
+	padding := cpu_graph_right_pad * 2
 	return (lc.Width - padding) * 2
 }
 func getDataRange(lc *ui.LineChart, data []float64, head int) []float64 {
 	points := computeNumPoints(lc)
 	if head < points {
-		return data
+		return data[:points]
 	}
-	return data[(head - points):]
+	var end int
+	if head+points < len(data) {
+		end = head
+	} else {
+		end = len(data) - 1
+	}
+	return data[(head - points):end]
 }
 func computeCpu(stats types.StatsJSON, currentUsage uint64, currentSystemUsage uint64) (cpuPct float64, cpuUsage uint64, systemUsage uint64) {
 	//compute the cpu usage percentage
