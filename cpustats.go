@@ -7,7 +7,11 @@ import (
 )
 
 const CPU_RANGE_SIZE = 600
-const cpu_graph_right_pad = 9
+const (
+	cpu_graph_right_pad = 9
+	cpu_graph_top_pad   = 1
+	cpu_graph_height    = 10
+)
 
 type CpuUsageWidget struct {
 	Views   []ui.GridBufferer
@@ -22,14 +26,8 @@ type CPUUsagePercent struct {
 func NewCpuUsageWidget() *CpuUsageWidget {
 	cpuGraph := ui.NewLineChart()
 	cpuGraph.BorderLabel = "CPU Usage"
-	cpuGraph.LineColor = ui.ColorRed | ui.AttrBold
-	cpuGraph.Height = 10
-	cpuGraph.PaddingTop = 1
-	cpuGraph.PaddingRight = 2
-	cpuGraph.X = 0
-	cpuGraph.Y = 0
-	cpuGraph.AxesColor = ui.ColorWhite
-	cpuGraph.BorderFg = ui.ColorCyan
+	cpuGraph.Height = cpu_graph_height
+	cpuGraph.PaddingTop = cpu_graph_top_pad
 	cpuGraph.PaddingRight = cpu_graph_right_pad
 	var currentCPUUsage = uint64(0)
 	var currentSystemUsage = uint64(0)
@@ -91,4 +89,5 @@ func computeCpu(stats types.StatsJSON, currentUsage uint64, currentSystemUsage u
 	cpuDiff := float64(newCpuUsage) - float64(currentUsage)
 	systemDiff := float64(newSystemUsage) - float64(currentSystemUsage)
 	return cpuDiff / systemDiff * float64(len(stats.CPUStats.CPUUsage.PercpuUsage)), newCpuUsage, newSystemUsage
+
 }

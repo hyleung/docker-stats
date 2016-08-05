@@ -16,11 +16,9 @@ type BlkIOWidget struct {
 func NewBlkIOWidget() BlkIOWidget {
 	servicedOps := ui.NewList()
 	servicedOps.BorderLabel = "I/O Operations"
-	servicedOps.BorderFg = ui.ColorCyan
 	servicedOps.PaddingLeft = 1
 	servicedBytes := ui.NewList()
 	servicedBytes.BorderLabel = "I/O Bytes"
-	servicedBytes.BorderFg = ui.ColorCyan
 	servicedBytes.PaddingLeft = 1
 
 	servicedOps.Height = 5

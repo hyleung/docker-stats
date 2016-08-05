@@ -16,8 +16,6 @@ type NetworkStatsWidget struct {
 func NewNetworkStats() NetworkStatsWidget {
 	rxList := ui.NewList()
 	rxList.BorderLabel = "Network Received"
-	rxList.BorderFg = ui.ColorCyan
-
 	rxData := []string{
 		"Bytes:   0",
 		"Packets: 0",
@@ -33,7 +31,6 @@ func NewNetworkStats() NetworkStatsWidget {
 
 	txList := ui.NewList()
 	txList.BorderLabel = "Network Transmit"
-	txList.BorderFg = ui.ColorCyan
 	txData := []string{
 		"Bytes:   0",
 		"Packets: 0",

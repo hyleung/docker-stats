@@ -45,11 +45,14 @@ func main() {
 			panic(err)
 		}
 		defer ui.Close()
+		ui.ColorMap["border.fg"] = ui.ColorCyan
+		ui.ColorMap["label.fg"] = ui.ColorGreen
+		ui.ColorMap["linechart.axes.fg"] = ui.ColorWhite
+		ui.ColorMap["linechart.line.fg"] = ui.ColorWhite
+		ui.ColorMap["gauge.bar.bg"] = ui.ColorGreen
 		p := ui.NewPar(":PRESS q to QUIT")
-		p.TextFgColor = ui.ColorWhite
 		p.BorderLabel = "Menu"
 		p.Height = 3
-		p.BorderFg = ui.ColorCyan
 
 		cpuUsage := NewCpuUsageWidget()
 		memoryUsage := NewMemoryUsageWidget()

@@ -18,13 +18,9 @@ func NewMemoryUsageWidget() *MemoryUsageWidget {
 	memoryUsage.Height = 3
 	memoryUsage.BorderLabel = "Memory Usage"
 
-	memoryUsage.BarColor = ui.ColorGreen
-	memoryUsage.BorderFg = ui.ColorCyan
-
 	pidStatsPar := ui.NewPar("PID Stats")
 	pidStatsPar.BorderLabel = "PID Stats"
 	pidStatsPar.Height = 3
-	pidStatsPar.BorderFg = ui.ColorCyan
 
 	return &MemoryUsageWidget{Views: []ui.GridBufferer{memoryUsage, pidStatsPar}, Handler: func(e ui.Event) {
 		stats := e.Data.(types.StatsJSON)
