@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/docker/engine-api/client"
@@ -18,13 +19,13 @@ func main() {
 	app.Action = func(c *cli.Context) error {
 		containerName := c.Args().Get(0)
 		log.Info("Starting monitoring on ", containerName)
+		defaultHeaders := map[string]string{"User-Agent": "engine-api-cli-1.0"}
+		cli, cli_err := client.NewClient("unix:///var/run/docker.sock", "1.24", nil, defaultHeaders)
+		if cli_err != nil {
+			panic(cli_err)
+		}
 		go func() {
 			//start watching the stats feed
-			defaultHeaders := map[string]string{"User-Agent": "engine-api-cli-1.0"}
-			cli, err := client.NewClient("unix:///var/run/docker.sock", "1.24", nil, defaultHeaders)
-			if err != nil {
-				panic(err)
-			}
 			readCloser, err := cli.ContainerStats(context.Background(), containerName, true)
 			defer readCloser.Close()
 			if err != nil {
@@ -40,6 +41,7 @@ func main() {
 				ui.SendCustomEvt("/docker/stats", stats)
 			}
 		}()
+
 		err := ui.Init()
 		if err != nil {
 			panic(err)
@@ -54,6 +56,20 @@ func main() {
 		p.BorderLabel = "Menu"
 		p.Height = 3
 
+		//inspect the container
+		container, container_err := cli.ContainerInspect(context.Background(), containerName)
+		if container_err != nil {
+			panic(container_err)
+		}
+		infoList := ui.NewList()
+		infoList.BorderLabel = "Container"
+		infoList.Items = []string{
+			fmt.Sprintf("ID	:	%s", container.ID[:12]),
+			fmt.Sprintf("Image:	%s", container.Config.Image),
+			//fmt.Sprintf("Cmd:	%s", container.Config.Cmd),
+			//fmt.Sprintf("Env:	%s", container.Config.Env),
+		}
+		infoList.Height = 5
 		cpuUsage := NewCpuUsageWidget()
 		memoryUsage := NewMemoryUsageWidget()
 		networkStats := NewNetworkStats()
@@ -71,6 +87,7 @@ func main() {
 			ui.NewRow(
 				ui.NewCol(3, 0, blkIOStats.Views[0]),
 				ui.NewCol(3, 0, blkIOStats.Views[1]),
+				ui.NewCol(6, 0, infoList),
 			),
 			ui.NewRow(
 				ui.NewCol(12, 0, p),
