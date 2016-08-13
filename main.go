@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/docker/engine-api/client"
@@ -14,13 +13,18 @@ import (
 	"strings"
 )
 
+const (
+	user_agent         = "engine-api-cli-1.0"
+	docker_api_version = "1.24"
+)
+
 func main() {
 	app := cli.NewApp()
 	app.Action = func(c *cli.Context) error {
 		containerName := c.Args().Get(0)
 		log.Info("Starting monitoring on ", containerName)
-		defaultHeaders := map[string]string{"User-Agent": "engine-api-cli-1.0"}
-		cli, cli_err := client.NewClient("unix:///var/run/docker.sock", "1.24", nil, defaultHeaders)
+		defaultHeaders := map[string]string{"User-Agent": user_agent}
+		cli, cli_err := client.NewClient("unix:///var/run/docker.sock", docker_api_version, nil, defaultHeaders)
 		if cli_err != nil {
 			panic(cli_err)
 		}
@@ -52,28 +56,17 @@ func main() {
 		ui.ColorMap["linechart.axes.fg"] = ui.ColorWhite
 		ui.ColorMap["linechart.line.fg"] = ui.ColorWhite
 		ui.ColorMap["gauge.bar.bg"] = ui.ColorGreen
-		p := ui.NewPar(":PRESS q to QUIT")
-		p.BorderLabel = "Menu"
-		p.Height = 3
-
 		//inspect the container
 		container, container_err := cli.ContainerInspect(context.Background(), containerName)
 		if container_err != nil {
 			panic(container_err)
 		}
-		infoList := ui.NewList()
-		infoList.BorderLabel = "Container"
-		infoList.Items = []string{
-			fmt.Sprintf("ID	:	%s", container.ID[:12]),
-			fmt.Sprintf("Image:	%s", container.Config.Image),
-			//fmt.Sprintf("Cmd:	%s", container.Config.Cmd),
-			//fmt.Sprintf("Env:	%s", container.Config.Env),
-		}
-		infoList.Height = 5
 		cpuUsage := NewCpuUsageWidget()
 		memoryUsage := NewMemoryUsageWidget()
 		networkStats := NewNetworkStats()
 		blkIOStats := NewBlkIOWidget()
+		menu := NewMenu()
+		infoList := NewInfoWidget(container)
 		//Grid layout
 		ui.Body.AddRows(
 			ui.NewRow(
@@ -90,15 +83,12 @@ func main() {
 				ui.NewCol(6, 0, infoList),
 			),
 			ui.NewRow(
-				ui.NewCol(12, 0, p),
+				ui.NewCol(12, 0, menu),
 			),
 		)
 		ui.Body.Align()
 		ui.Render(ui.Body)
 
-		ui.Handle("/sys/kbd/q", func(ui.Event) {
-			ui.StopLoop()
-		})
 		ui.Handle("/docker/stats", func(e ui.Event) {
 			networkStats.Handler(e)
 			memoryUsage.Handler(e)
