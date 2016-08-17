@@ -20,8 +20,17 @@ const (
 
 func main() {
 	app := cli.NewApp()
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "theme, t",
+			Value: "dark",
+			Usage: "Theme for UI",
+		},
+	}
+
 	app.Action = func(c *cli.Context) error {
 		containerName := c.Args().Get(0)
+
 		log.Info("Starting monitoring on ", containerName)
 		defaultHeaders := map[string]string{"User-Agent": user_agent}
 		cli, cli_err := client.NewClient("unix:///var/run/docker.sock", docker_api_version, nil, defaultHeaders)
@@ -51,11 +60,23 @@ func main() {
 			panic(err)
 		}
 		defer ui.Close()
-		ui.ColorMap["border.fg"] = ui.ColorCyan
-		ui.ColorMap["label.fg"] = ui.ColorGreen
-		ui.ColorMap["linechart.axes.fg"] = ui.ColorWhite
-		ui.ColorMap["linechart.line.fg"] = ui.ColorWhite
-		ui.ColorMap["gauge.bar.bg"] = ui.ColorGreen
+		if c.String("theme") == "light" {
+			ui.ColorMap["border.fg"] = ui.ColorBlack
+			ui.ColorMap["label.fg"] = ui.ColorGreen
+			ui.ColorMap["linechart.axes.fg"] = ui.ColorBlack
+			ui.ColorMap["linechart.line.fg"] = ui.ColorBlack
+			ui.ColorMap["gauge.bar.bg"] = ui.ColorGreen
+			ui.ColorMap["list.item.fg"] = ui.ColorBlack
+		} else {
+			ui.ColorMap["border.fg"] = ui.ColorCyan
+			ui.ColorMap["label.fg"] = ui.ColorGreen
+			ui.ColorMap["linechart.axes.fg"] = ui.ColorWhite
+			ui.ColorMap["linechart.line.fg"] = ui.ColorWhite
+			ui.ColorMap["gauge.bar.bg"] = ui.ColorGreen
+			ui.ColorMap["list.item.fg"] = ui.ColorWhite
+
+		}
+
 		//inspect the container
 		container, container_err := cli.ContainerInspect(context.Background(), containerName)
 		if container_err != nil {
