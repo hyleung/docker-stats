@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	humanize "github.com/dustin/go-humanize"
 	//log "github.com/Sirupsen/logrus"
 	"github.com/docker/engine-api/types"
 	ui "github.com/gizak/termui"
@@ -55,7 +56,7 @@ func NewNetworkStats() NetworkStatsWidget {
 
 func formatRxData(stats types.NetworkStats) []string {
 	data := []string{
-		fmt.Sprintf("Bytes:   %d", stats.RxBytes),
+		fmt.Sprintf("Bytes:   %s", humanize.Bytes(stats.RxBytes)),
 		fmt.Sprintf("Packets: %d", stats.RxPackets),
 		fmt.Sprintf("Errors:  %d", stats.RxErrors),
 		fmt.Sprintf("Dropped: %d", stats.RxDropped),
@@ -64,7 +65,7 @@ func formatRxData(stats types.NetworkStats) []string {
 }
 func formatTxData(stats types.NetworkStats) []string {
 	data := []string{
-		fmt.Sprintf("Bytes:   %d", stats.TxBytes),
+		fmt.Sprintf("Bytes:   %s", humanize.Bytes(stats.TxBytes)),
 		fmt.Sprintf("Packets: %d", stats.TxPackets),
 		fmt.Sprintf("Errors:  %d", stats.TxErrors),
 		fmt.Sprintf("Dropped: %d", stats.TxDropped),
