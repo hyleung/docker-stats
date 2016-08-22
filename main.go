@@ -67,6 +67,8 @@ func main() {
 			ui.ColorMap["linechart.line.fg"] = ui.ColorBlack
 			ui.ColorMap["gauge.bar.bg"] = ui.ColorGreen
 			ui.ColorMap["list.item.fg"] = ui.ColorBlack
+			ui.ColorMap["par.text.fg"] = ui.ColorBlack
+			ui.ColorMap["gauge.percent.fg"] = ui.ColorBlack
 		} else {
 			ui.ColorMap["border.fg"] = ui.ColorCyan
 			ui.ColorMap["label.fg"] = ui.ColorGreen
@@ -74,7 +76,8 @@ func main() {
 			ui.ColorMap["linechart.line.fg"] = ui.ColorWhite
 			ui.ColorMap["gauge.bar.bg"] = ui.ColorGreen
 			ui.ColorMap["list.item.fg"] = ui.ColorWhite
-
+			ui.ColorMap["par.text.fg"] = ui.ColorWhite
+			ui.ColorMap["gauge.percent.fg"] = ui.ColorWhite
 		}
 
 		//inspect the container
