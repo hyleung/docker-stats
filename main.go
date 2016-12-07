@@ -18,6 +18,15 @@ const (
 	docker_api_version = "1.24"
 )
 
+func CreateClient() (*client.Client, error) {
+	if os.Getenv("DOCKER_HOST") != "" {
+		return client.NewEnvClient()
+	} else {
+		defaultHeaders := map[string]string{"User-Agent": user_agent}
+		return client.NewClient("unix:///var/run/docker.sock", docker_api_version, nil, defaultHeaders)
+	}
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Flags = []cli.Flag{
@@ -32,8 +41,7 @@ func main() {
 		containerName := c.Args().Get(0)
 
 		log.Info("Starting monitoring on ", containerName)
-		defaultHeaders := map[string]string{"User-Agent": user_agent}
-		cli, cli_err := client.NewClient("unix:///var/run/docker.sock", docker_api_version, nil, defaultHeaders)
+		cli, cli_err := CreateClient()
 		if cli_err != nil {
 			panic(cli_err)
 		}
