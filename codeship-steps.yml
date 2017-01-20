@@ -1,0 +1,3 @@
+- name: go-build
+  service: docker_stats
+  command: go test 

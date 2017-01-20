@@ -1,0 +1,4 @@
+docker_stats:
+  build:
+    image: docker-stats-build
+    dockerfile_path: Dockerfile
