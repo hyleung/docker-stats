@@ -1,5 +1,6 @@
 #Docker-Stats
 
+[ ![Codeship Status for hyleung/docker-stats](https://app.codeship.com/projects/88893730-c14e-0134-6b47-06c643da7fc7/status?branch=master)](https://app.codeship.com/projects/197240)
 
 ![screenshot](docker-stats.png)
 
