@@ -3,13 +3,13 @@
   command: go test
 - type: parallel
   steps:
-  - service: docker_stats_darwin_386
-    command: go build
-  - service: docker_stats_linux_386
-    command: go build -v -o docker-stats-linux-386
-  - service: docker_stats_linux_amd64
-    command: go build -v -o docker-stats-linux-amd64
-  - service: docker_stats_windows_386
-    command: go build -v -o docker-stats-windows-386
-  - service: docker_stats_windows_amd64
-    command: go build -v -o docker-stats-windows-amd64
+  - service: docker_stats
+    command: sh build.sh darwin 386
+  - service: docker_stats
+    command: sh build.sh linux 386
+  - service: docker_stats
+    command: sh build.sh linux amd64
+  - service: docker_stats
+    command: sh build.sh windows 386
+  - service: docker_stats
+    command: sh build.sh windows amd64

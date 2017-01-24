@@ -2,38 +2,9 @@ docker_stats:
   build:
     image: docker-stats-build
     dockerfile_path: Dockerfile
-docker_stats_darwin_386:
-  build:
-    image: docker-stats-build
-    dockerfile_path: Dockerfile
-    args:
-      GOOS: darwin
-      GOARCH: 386
-docker_stats_linux_386:
-  build:
-    image: docker-stats-build
-    dockerfile_path: Dockerfile
-    args:
-      GOOS: linux 
-      GOARCH: 386
-docker_stats_linux_amd64:
-  build:
-    image: docker-stats-build
-    dockerfile_path: Dockerfile
-    args:
-      GOOS: linux 
-      GOARCH: amd64 
-docker_stats_windows_386:
-  build:
-    image: docker-stats-build
-    dockerfile_path: Dockerfile
-    args:
-      GOOS: windows 
-      GOARCH: 386
-docker_stats_windows_amd64:
-  build:
-    image: docker-stats-build
-    dockerfile_path: Dockerfile
-    args:
-      GOOS: windows 
-      GOARCH: amd64 
+  volumes_from:
+    - data
+data:
+  image: busybox
+  volumes:
+    - ./tmp:/artifacts
